@@ -14,7 +14,7 @@ use wagyu_model::{
 use base58::{FromBase58, ToBase58};
 use core::{convert::TryFrom, fmt, fmt::Display, marker::PhantomData, str::FromStr};
 use hmac::{Hmac, Mac};
-use secp256k1::{PublicKey, SecretKey};
+use libsecp256k1::{PublicKey, SecretKey};
 use sha2::Sha512;
 
 type HmacSha512 = Hmac<Sha512>;

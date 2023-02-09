@@ -9,7 +9,7 @@ use wagyu_model::{PrivateKey, PublicKey, Transaction, TransactionError, Transact
 use core::{fmt, marker::PhantomData, str::FromStr};
 use ethereum_types::U256;
 use rlp::{decode_list, RlpStream};
-use secp256k1;
+use libsecp256k1;
 use tiny_keccak::keccak256;
 
 pub fn to_bytes(value: u32) -> Result<Vec<u8>, TransactionError> {
@@ -116,8 +116,8 @@ impl<N: EthereumNetwork> Transaction for EthereumTransaction<N> {
             (Some(_), Some(_)) => Ok(self.clone()),
             (Some(_), None) | (None, Some(_)) => Err(TransactionError::InvalidTransactionState),
             (None, None) => {
-                let (signature, v) = secp256k1::sign(
-                    &secp256k1::Message::parse_slice(&self.to_transaction_id()?.txid)?,
+                let (signature, v) = libsecp256k1::sign(
+                    &libsecp256k1::Message::parse_slice(&self.to_transaction_id()?.txid)?,
                     &private_key.to_secp256k1_secret_key(),
                 );
                 let signature = signature.serialize();
@@ -176,7 +176,7 @@ impl<N: EthereumNetwork> Transaction for EthereumTransaction<N> {
             false => {
                 // Signed transaction
                 let v = from_bytes(&list[6])?;
-                let recovery_id = secp256k1::RecoveryId::parse((v - N::CHAIN_ID * 2 - 35) as u8)?;
+                let recovery_id = libsecp256k1::RecoveryId::parse((v - N::CHAIN_ID * 2 - 35) as u8)?;
                 let mut signature = list[7].clone();
                 signature.extend_from_slice(&list[8]);
 
@@ -186,10 +186,10 @@ impl<N: EthereumNetwork> Transaction for EthereumTransaction<N> {
                     signature: None,
                     _network: PhantomData,
                 };
-                let message = secp256k1::Message::parse_slice(&raw_transaction.to_transaction_id()?.txid)?;
-                let public_key = EthereumPublicKey::from_secp256k1_public_key(secp256k1::recover(
+                let message = libsecp256k1::Message::parse_slice(&raw_transaction.to_transaction_id()?.txid)?;
+                let public_key = EthereumPublicKey::from_secp256k1_public_key(libsecp256k1::recover(
                     &message,
-                    &secp256k1::Signature::parse_slice(signature.as_slice())?,
+                    &libsecp256k1::Signature::parse_der(signature.as_slice())?,
                     &recovery_id,
                 )?);
 

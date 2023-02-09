@@ -13,7 +13,7 @@ use base58::{FromBase58, ToBase58};
 use core::{convert::TryFrom, fmt, marker::PhantomData, str::FromStr};
 use hex;
 use hmac::{Hmac, Mac};
-use secp256k1::{PublicKey as Secp256k1_PublicKey, SecretKey};
+use libsecp256k1::{PublicKey as Secp256k1_PublicKey, SecretKey};
 use sha2::Sha512;
 
 type HmacSha512 = Hmac<Sha512>;
@@ -198,7 +198,7 @@ mod tests {
         let extended_public_key = EthereumExtendedPublicKey::<N>::from_extended_private_key(&extended_private_key);
         assert_eq!(expected_extended_public_key, extended_public_key.to_string());
         assert_eq!(
-            secp256k1::PublicKey::parse_slice(&hex::decode(expected_public_key).unwrap(), None).unwrap(),
+            libsecp256k1::PublicKey::parse_slice(&hex::decode(expected_public_key).unwrap(), None).unwrap(),
             extended_public_key.public_key.to_secp256k1_public_key()
         );
         assert_eq!(expected_child_index, u32::from(extended_public_key.child_index));
@@ -253,7 +253,7 @@ mod tests {
     ) {
         let extended_public_key = EthereumExtendedPublicKey::<N>::from_str(&extended_public_key).unwrap();
         assert_eq!(
-            secp256k1::PublicKey::parse_slice(&hex::decode(expected_public_key).unwrap(), None).unwrap(),
+            libsecp256k1::PublicKey::parse_slice(&hex::decode(expected_public_key).unwrap(), None).unwrap(),
             extended_public_key.public_key.to_secp256k1_public_key()
         );
         assert_eq!(expected_child_index, u32::from(extended_public_key.child_index));
