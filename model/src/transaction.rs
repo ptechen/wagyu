@@ -227,8 +227,8 @@ impl From<rlp::DecoderError> for TransactionError {
     }
 }
 
-impl From<secp256k1::Error> for TransactionError {
-    fn from(error: secp256k1::Error) -> Self {
+impl From<libsecp256k1::Error> for TransactionError {
+    fn from(error: libsecp256k1::Error) -> Self {
         TransactionError::Crate("libsecp256k1", format!("{:?}", error))
     }
 }

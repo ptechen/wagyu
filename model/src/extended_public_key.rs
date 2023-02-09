@@ -125,8 +125,8 @@ impl From<crypto_mac::InvalidKeyLength> for ExtendedPublicKeyError {
     }
 }
 
-impl From<secp256k1::Error> for ExtendedPublicKeyError {
-    fn from(error: secp256k1::Error) -> Self {
+impl From<libsecp256k1::Error> for ExtendedPublicKeyError {
+    fn from(error: libsecp256k1::Error) -> Self {
         ExtendedPublicKeyError::Crate("libsecp256k1", format!("{:?}", error))
     }
 }

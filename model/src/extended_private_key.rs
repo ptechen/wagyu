@@ -74,6 +74,9 @@ pub enum ExtendedPrivateKeyError {
 
     #[fail(display = "unsupported format: {}", _0)]
     UnsupportedFormat(String),
+
+    #[fail(display = "{}", _0)]
+    Libsecp256k1Error(libsecp256k1::Error)
 }
 
 impl From<crate::no_std::io::Error> for ExtendedPrivateKeyError {
@@ -124,8 +127,8 @@ impl From<crypto_mac::InvalidKeyLength> for ExtendedPrivateKeyError {
     }
 }
 
-impl From<secp256k1::Error> for ExtendedPrivateKeyError {
-    fn from(error: secp256k1::Error) -> Self {
+impl From<libsecp256k1::Error> for ExtendedPrivateKeyError {
+    fn from(error: libsecp256k1::Error) -> Self {
         ExtendedPrivateKeyError::Crate("libsecp256k1", format!("{:?}", error))
     }
 }
